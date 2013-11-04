@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<input_parameters>
+
+    <!--verbose and plot **************************************************************** -->
+    <verbose>1</verbose>
+    <plot_dispersion>1</plot_dispersion>
+    <plot_amplitudes>0</plot_amplitudes> 
+
+    <!--Earth model-->
+    <model>PREM</model>   
+
+    <!--output specifications ********************************************************** -->
+    <output>
+        <!--write output or not (1 or 0)-->
+        <write_output>1</write_output>
+        <directory>OUTPUT/</directory>
+        <tag>prem</tag>
+    </output>
+    
+    <!--vertical integration parameters *********************************************** -->
+    <integration>
+        <!--starting depth of the integration in m-->
+        <starting_radius>5071000.0</starting_radius>
+        <!--depth sampling in m-->
+        <radius_sampling>1000.0</radius_sampling>
+    </integration>
+
+    <!--sampling in period-phase velocity space **************************************** -->
+    <T_c_sampling>
+        <!--minimum and maximum periods in s, period sampling in s-->
+        <T_min>20.0</T_min>
+        <T_max>80.0</T_max>
+        <dT>2.5</dT>
+        <!--minimum and maximum trial phase velocities, phase velocity sampling, all in m/s-->
+        <c_min>2800.0</c_min>
+        <c_max>5600.0</c_max>
+        <dc>50.0</dc>
+    </T_c_sampling>
+    
+</input_parameters>
