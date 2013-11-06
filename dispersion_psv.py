@@ -13,6 +13,9 @@ import matplotlib.pyplot as plt
 import TOOLS.read_xml as rxml
 import TOOLS.integrate_psv_alt as ipsv_alt
 import TOOLS.integrate_psv as ipsv
+import TOOLS.group_velocity_psv as vg
+import TOOLS.kernels_psv as kpsv
+import MODELS.models as m
 
 def dispersion_psv(xml_input):
 	"""
@@ -55,6 +58,18 @@ def dispersion_psv(xml_input):
 
 	periods = []
 	phase_velocities = []
+	group_velocities = []
+
+	r = np.arange(r_min, 6371000.0 + dr, dr, dtype=float)
+	rho = np.zeros(len(r))
+	A = np.zeros(len(r))
+	C = np.zeros(len(r))
+	F = np.zeros(len(r))
+	L = np.zeros(len(r))
+	N = np.zeros(len(r))
+
+	for n in np.arange(len(r)):
+		rho[n], A[n], C[n], F[n], L[n], N[n] = m.models(r[n], model)
 
 	#- root-finding algorithm ---------------------------------------------------------------------
 
@@ -92,6 +107,10 @@ def dispersion_psv(xml_input):
 					else:
 						continue
 
+				#==================================================================================
+				#- compute final vertical wave functions and corresponding velocities and kernels -
+				#==================================================================================
+
 				#- compute final vertical wave functions using the original first-order system
 				#- two independent solutions
 				r11, r21, r31, r41, r = ipsv.integrate_psv(r_min, dr, _omega, k_new, model, 1)
@@ -111,12 +130,27 @@ def dispersion_psv(xml_input):
 				r3 = r3 / mm
 				r4 = r4 / mm
 
+				#- phase velocity
+
 				periods.append(2*np.pi/_omega)
 				phase_velocities.append(_omega / k_new)
 
+				#- group velocity
+
+				U, I1, I3 = vg.group_velocity_psv(r1, r2, r3, r4, r, k_new, _omega/k_new, rho, A, C, F, L, N)
+				group_velocities.append(U)
+
+				#- kernels
+
+				kpsv.kernels_psv(r, r1, r2, r3, r4, _omega, k_new, I3, rho, A, C, F, L, N, write_output, output_directory, tag)
+
+				#==================================================================================
+				#- screen output and displacement function files ----------------------------------
+				#==================================================================================
+
 				#- plot and print to screen
 				if verbose:
-					print "T="+str(2*np.pi/_omega)+" s, c="+str(_omega / k_new)+" m/s"
+					print "T="+str(2*np.pi/_omega)+" s, c="+str(_omega / k_new)+" m/s, U="+str(U)+" m/s"
 				if plot_amplitudes:
 					f=plt.figure()
 					f.text(0.5,0.95,"T="+str(2*np.pi/_omega)+" s, c="+str(_omega / k_new)+" m/s",horizontalalignment="center",verticalalignment="top")
@@ -151,24 +185,28 @@ def dispersion_psv(xml_input):
 
 			r_left = r_right
 
+	#==============================================================================================
 	#- output -------------------------------------------------------------------------------------
+	#==============================================================================================
+
+	#- dispersion curve ---------------------------------------------------------------------------
 
 	if write_output:
 
 		#- write dispersion curve
 		fid = open(output_directory+"dispersion_psv."+tag,"w")
 		for k in np.arange(len(periods)):
-			fid.write(str(periods[k])+" "+str(phase_velocities[k])+"\n")
+			fid.write(str(periods[k])+" "+str(phase_velocities[k])+" "+str(group_velocities[k])+"\n")
 		fid.close()
 
 	#- plot ---------------------------------------------------------------------------------------
 
 	if plot_dispersion:
 		plt.plot(periods,phase_velocities,'ko')
-		plt.plot(periods,phase_velocities,'rx')
+		plt.plot(periods,group_velocities,'ro')
 		plt.margins(0.2)
 		plt.xlabel("period [s]")
-		plt.ylabel("phase velocity [m/s]")
+		plt.ylabel("phase velocity (black), group velocity (red) [m/s]")
 		plt.title("PSV dispersion")
 		plt.show()
 

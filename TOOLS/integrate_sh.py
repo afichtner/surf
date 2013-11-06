@@ -66,7 +66,7 @@ def integrate_sh(r_min, dr, omega, k, model):
 
 		#- set initial values
 		l2[0] = 1.0 
-		l1[0] = L * np.sqrt(k**2 - (omega**2 * rho / L))
+		l1[0] = 0.0 #L * np.sqrt(k**2 - (omega**2 * rho / L))
 
 		#- integrate upwards with 4th-order Runge-Kutta--------------------------------------------
 

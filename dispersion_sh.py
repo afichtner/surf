@@ -1,8 +1,9 @@
 """
-Computation dispersion curves and stress-displacement functions for SH propagation.
+Computation dispersion curves, stress-displacement functions
+and sensitivity kernels for SH propagation.
 
 :copyright:
-    Andreas Fichtner (andreas.fichtner@erdw.ethz.ch), August 2013
+    Andreas Fichtner (andreas.fichtner@erdw.ethz.ch), November 2013
 :license:
     GNU General Public License, Version 3
     (http://www.gnu.org/copyleft/gpl.html)
@@ -12,10 +13,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 import TOOLS.read_xml as rxml
 import TOOLS.integrate_sh as ish
+import TOOLS.group_velocity_sh as vg
+import TOOLS.kernels_sh as ksh
+import MODELS.models as m
 
 def dispersion_sh(xml_input):
 	"""
-	Compute dispersion curves and displacement functions for SH propagation.
+	Compute dispersion curves, displacement functions and kernels for SH propagation.
 	periods, phase_velocities = dispersion_sh(xml_input)
 	Dispersion curves and displacement functions are written to files.
 	"""
@@ -54,6 +58,18 @@ def dispersion_sh(xml_input):
 
 	periods = []
 	phase_velocities = []
+	group_velocities = []
+
+	r = np.arange(r_min, 6371000.0 + dr, dr, dtype=float)
+	rho = np.zeros(len(r))
+	A = np.zeros(len(r))
+	C = np.zeros(len(r))
+	F = np.zeros(len(r))
+	L = np.zeros(len(r))
+	N = np.zeros(len(r))
+
+	for n in np.arange(len(r)):
+		rho[n], A[n], C[n], F[n], L[n], N[n] = m.models(r[n], model)
 
 	#- root-finding algorithm ---------------------------------------------------------------------
 
@@ -92,15 +108,35 @@ def dispersion_sh(xml_input):
 					else:
 						continue
 
-				#- compute final vertical wave functions
+				#==================================================================================
+				#- compute final vertical wave functions and corresponding velocities and kernels -
+				#==================================================================================
+
+				#- stress and displacement functions 
+
 				l1, l2, r = ish.integrate_sh(r_min, dr, _omega, k_new, model)
 
+				#- phase velocity
+
 				periods.append(2*np.pi/_omega)
-				phase_velocities.append(_omega / k_new)
+				phase_velocities.append(_omega/k_new)
+
+				#- group velocity
+
+				U, I1, I3 = vg.group_velocity_sh(l1, l2, r, _omega/k_new, rho, N)
+				group_velocities.append(U)
+
+				#- kernels
+
+				ksh.kernels_sh(r, l1, l2, _omega, k_new, I3, rho, A, C, F, L, N, write_output, output_directory, tag)
+
+				#==================================================================================
+				#- screen output and displacement function files ----------------------------------
+				#==================================================================================
 
 				#- plot and print to screen
 				if verbose:
-					print "T="+str(2*np.pi/_omega)+" s, c="+str(_omega / k_new)+" m/s"
+					print "T="+str(2*np.pi/_omega)+" s, c="+str(_omega / k_new)+" m/s, U="+str(U)+" m/s"
 				if plot_amplitudes:
 					plt.plot(r, l1)
 					plt.xlabel("radius [m]")
@@ -121,24 +157,26 @@ def dispersion_sh(xml_input):
 
 			l_left =l_right
 
+	#==============================================================================================
 	#- output -------------------------------------------------------------------------------------
+	#==============================================================================================
 
 	if write_output:
 
 		#- write dispersion curve
 		fid = open(output_directory+"dispersion_sh."+tag,"w")
 		for k in np.arange(len(periods)):
-			fid.write(str(periods[k])+" "+str(phase_velocities[k])+"\n")
+			fid.write(str(periods[k])+" "+str(phase_velocities[k])+" "+str(group_velocities[k])+"\n")
 		fid.close()
 
 	#- plot ---------------------------------------------------------------------------------------
 
 	if plot_dispersion:
 		plt.plot(periods,phase_velocities,'ko')
-		plt.plot(periods,phase_velocities,'rx')
+		plt.plot(periods,group_velocities,'ro')
 		plt.margins(0.2)
 		plt.xlabel("period [s]")
-		plt.ylabel("phase velocity [m/s]")
+		plt.ylabel("phase velocity (black), group velocity (red) [m/s]")
 		plt.title("SH dispersion")
 		plt.show()
 
