@@ -56,6 +56,7 @@ def dispersion_sh(xml_input):
 	c = np.arange(c_min,c_max + dc,dc,dtype=float)
 	omega = 2 * np.pi / T
 
+	mode = []
 	periods = []
 	phase_velocities = []
 	group_velocities = []
@@ -75,7 +76,9 @@ def dispersion_sh(xml_input):
 
 	#- loop over angular frequencies
 	for _omega in omega:
+		
 		k = _omega / c
+		mode_count = 0.0
 
 		#- loop over trial wavenumbers
 		l_left = 0.0
@@ -88,6 +91,9 @@ def dispersion_sh(xml_input):
 			#- check if there is a zero -----------------------------------------------------------
 			if l_left * l_right < 0.0:
 
+				mode_count += 1.0
+				mode.append(mode_count)
+
 				#- start bisection algorithm
 				ll_left = l_left
 				ll_right = l_right
@@ -95,7 +101,6 @@ def dispersion_sh(xml_input):
 				k_right = k[n]
 
 				for i in np.arange(5):
-					#k_new = (k_left + k_right) / 2.0
 					k_new = (k_left * np.abs(ll_right) + k_right * np.abs(ll_left)) / (np.abs(ll_left) + np.abs(ll_right))
 					l1, l2, r = ish.integrate_sh(r_min, dr, _omega, k_new, model)
 					ll = l2[len(l2)-1]
@@ -150,9 +155,9 @@ def dispersion_sh(xml_input):
 					fid = open(output_directory+"displacement_sh."+tag+"."+identifier,"w")
 					fid.write("number of vertical sampling points\n")
 					fid.write(str(len(r))+"\n")
-					fid.write("radius displacement\n")
+					fid.write("radius displacement stress\n")
 					for idx in np.arange(len(r)):
-						fid.write(str(r[idx])+" "+str(l1[idx])+"\n")
+						fid.write(str(r[idx])+" "+str(l1[idx])+" "+str(l2[idx])+"\n")
 					fid.close()
 
 			l_left =l_right
@@ -171,9 +176,16 @@ def dispersion_sh(xml_input):
 
 	#- plot ---------------------------------------------------------------------------------------
 
+	print mode
+
 	if plot_dispersion:
-		plt.plot(periods,phase_velocities,'ko')
-		plt.plot(periods,group_velocities,'ro')
+
+		for n in np.arange(len(periods)):
+
+			plt.plot(periods[n],phase_velocities[n],'ko')
+			if mode[n]==1.0: 
+				plt.plot(periods[n],group_velocities[n],'ro')
+		
 		plt.margins(0.2)
 		plt.xlabel("period [s]")
 		plt.ylabel("phase velocity (black), group velocity (red) [m/s]")

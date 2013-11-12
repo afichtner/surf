@@ -62,11 +62,11 @@ def integrate_sh(r_min, dr, omega, k, model):
 	rho, A, C, F, L, N = m.models(r[0], model)
 
 	#- check if phase velocity is below S velocity ------------------------------------------------
-	if (k**2 - (omega**2 * rho / L)) > 0.0:
+	if (1==1): #(k**2 - (omega**2 * rho / L)) > 0.0:
 
 		#- set initial values
 		l2[0] = 1.0 
-		l1[0] = 0.0 #L * np.sqrt(k**2 - (omega**2 * rho / L))
+		l1[0] = 0.0
 
 		#- integrate upwards with 4th-order Runge-Kutta--------------------------------------------
 

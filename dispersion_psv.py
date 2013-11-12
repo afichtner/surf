@@ -56,6 +56,7 @@ def dispersion_psv(xml_input):
 	c = np.arange(c_min,c_max + dc,dc,dtype=float)
 	omega = 2 * np.pi / T
 
+	mode = []
 	periods = []
 	phase_velocities = []
 	group_velocities = []
@@ -75,6 +76,8 @@ def dispersion_psv(xml_input):
 
 	#- loop over angular frequencies
 	for _omega in omega:
+		
+		mode_count = 0.0
 		k = _omega / c
 
 		#- loop over trial wavenumbers
@@ -87,6 +90,9 @@ def dispersion_psv(xml_input):
 
 			#- check if there is a zero -----------------------------------------------------------
 			if r_left * r_right < 0.0:
+
+				mode_count += 1.0
+				mode.append(mode_count)
 
 				#- start bisection algorithm
 				rr_left = r_left
@@ -202,8 +208,13 @@ def dispersion_psv(xml_input):
 	#- plot ---------------------------------------------------------------------------------------
 
 	if plot_dispersion:
-		plt.plot(periods,phase_velocities,'ko')
-		plt.plot(periods,group_velocities,'ro')
+
+		for n in np.arange(len(periods)):
+
+			plt.plot(periods[n],phase_velocities[n],'ko')
+			#if mode[n]==1.0:
+			plt.plot(periods[n],group_velocities[n],'ro')
+		
 		plt.margins(0.2)
 		plt.xlabel("period [s]")
 		plt.ylabel("phase velocity (black), group velocity (red) [m/s]")

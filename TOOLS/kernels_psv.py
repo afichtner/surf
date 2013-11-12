@@ -47,19 +47,21 @@ def kernels_psv(r, r1, r2, r3, r4, _omega, _k, I3, rho, A, C, F, L, N, write_out
 
 	#- compute fundamental kernels ----------------------------------------------------------------
 
-	K_rho_0 = -v**2 * _omega * (r1**2 + r3**2)
-	K_A_0 = _omega * r3**2
-	K_C_0 = v * (r2 + _k*F*r3)**2 / (_k*C**2)
-	K_F_0 = -2*v * (r2 + _k*F*r3) * r3/C
-	K_L_0 = (v/_k) * (r4/L)**2 
-	K_N_0 = np.zeros(len(r))
+	if (I3!=0.0):
 
-	K_rho_0 = K_rho_0 / (2*_k*I3)
-	K_A_0 = K_A_0 / (2*_k*I3)
-	K_C_0 = K_C_0 / (2*_k*I3)
-	K_F_0 = K_F_0 / (2*_k*I3)
-	K_L_0 = K_L_0 / (2*_k*I3)
-	K_N_0 = K_N_0 / (2*_k*I3)
+		K_rho_0 = -v**2 * _omega * (r1**2 + r3**2)
+		K_A_0 = _omega * r3**2
+		K_C_0 = v * (r2 + _k*F*r3)**2 / (_k*C**2)
+		K_F_0 = -2*v * (r2 + _k*F*r3) * r3/C
+		K_L_0 = (v/_k) * (r4/L)**2 
+		K_N_0 = np.zeros(len(r))
+
+		K_rho_0 = K_rho_0 / (2*_k*I3)
+		K_A_0 = K_A_0 / (2*_k*I3)
+		K_C_0 = K_C_0 / (2*_k*I3)
+		K_F_0 = K_F_0 / (2*_k*I3)
+		K_L_0 = K_L_0 / (2*_k*I3)
+		K_N_0 = K_N_0 / (2*_k*I3)
 
 	#- compute relative kernels in velocity parametrisation ---------------------------------------
 

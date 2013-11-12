@@ -55,7 +55,7 @@ def kernels_sh(r, l1, l2, _omega, _k, I3, rho, A, C, F, L, N, write_output, outp
 	K_vpv = 2*C*K_C_0
 	K_vsh = 2*N*K_N_0
 	K_vsv = 2*L*K_L_0 - 4*L*eta*K_F_0
-	K_rho = rho*K_rho_0 + A*K_A_0 + C*K_C_0 + N*K_N_0 + L*K_L_0 + (A-2*L)*eta*K_F_0 
+	K_rho = rho*K_rho_0 + N*K_N_0 + L*K_L_0
 	K_eta = F*K_F_0
 
 	#- convert to relative kernels ----------------------------------------------------------------
@@ -72,7 +72,7 @@ def kernels_sh(r, l1, l2, _omega, _k, I3, rho, A, C, F, L, N, write_output, outp
 		fid = open(output_directory+"kernels_sh."+tag+"."+identifier,"w")
 		fid.write("number of vertical sampling points\n")
 		fid.write(str(len(r))+"\n")
-		fid.write("radius K_rho_0 K_A_0 K_C_0 K_F_0 K_L_0 K_N_0 K_rho K_vph K_vpv K_vsv K_vsh K_eta\n")
+		fid.write("radius K_rho_0 K_A_0 K_C_0 K_F_0 K_L_0 K_N_0 K_rho K_vph K_vpv K_vsh K_vsv K_eta\n")
 		for idx in np.arange(len(r)):
 			fid.write(str(r[idx])+" "+str(K_rho_0[idx])+" "+str(K_A_0[idx])+" "+str(K_C_0[idx])+" "+str(K_F_0[idx])+" "+str(K_L_0[idx])+" "+str(K_N_0[idx])+" "+str(K_rho[idx])+" "+str(K_vph[idx])+" "+str(K_vpv[idx])+" "+str(K_vsh[idx])+" "+str(K_vsv[idx])+" "+str(K_eta[idx])+"\n")
 		fid.close()

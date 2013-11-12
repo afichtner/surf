@@ -24,7 +24,7 @@ def group_velocity_sh(l1, l2, r, phase_velocity, rho, N):
 	I3 = 0.0
 	dr = r[1] - r[0]
 
-	for n in np.arange(len(r)-1):
+	for n in np.arange(len(r)):
 
 		I1 = I1 + (rho[n] * l1[n]**2) 
 		I3 = I3 + (N[n] * l1[n]**2) 

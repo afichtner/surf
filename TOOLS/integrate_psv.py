@@ -59,7 +59,7 @@ def integrate_psv(r_min, dr, omega, k, model, initial_condition):
 	rho, A, C, F, L, N = m.models(r[0], model)
 
 	#- check if phase velocity is below S velocity ------------------------------------------------
-	if (k**2 - (omega**2 * rho / L)) > 0.0:
+	if (1==1): #(k**2 - (omega**2 * rho / L)) > 0.0:
 
 		#- set initial values
 		if initial_condition == 1:

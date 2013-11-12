@@ -19,7 +19,8 @@ def plot_displacement_sh(filename,show=True):
 	n=int(f.readline())
 	f.readline()
 
-	l=np.zeros(n)
+	l1=np.zeros(n)
+	l2=np.zeros(n)
 	r=np.zeros(n)
 
 	#- march through the depth levels and read file -----------------------------------------------
@@ -27,19 +28,27 @@ def plot_displacement_sh(filename,show=True):
 	for k in range(n):
 		dummy=f.readline().strip().split(' ')
 		r[k]=dummy[0]
-		l[k]=dummy[1]
+		l1[k]=dummy[1]
+		l2[k]=dummy[2]
 
 	#- normalise and clean up ---------------------------------------------------------------------
 
-	l=l/np.max(l)
+	l1=l1/np.max(l1)
+	l2=l2/np.max(l1)
 	r=r/1000.0
 
 	f.close()
 
 	#- plot results -------------------------------------------------------------------------------
 
-	plt.plot(l,r,'k')
+	plt.plot(l1,r,'k')
 	plt.xlabel('normalised displacement')
+	plt.ylabel('radius [km]')
+	
+	if show==True: plt.show()
+
+	plt.plot(l2,r,'k')
+	plt.xlabel('displacement-normalised stress')
 	plt.ylabel('radius [km]')
 	
 	if show==True: plt.show()
