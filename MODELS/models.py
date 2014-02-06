@@ -22,6 +22,9 @@ def models(r, model):
 	if model=="PREM":
 		return model_prem(r)
 
+	elif model=="PREM_iso":
+		return model_prem_iso(r)
+
 	elif model=="ONELAYER":
 		return model_onelayer(r)
 
@@ -182,6 +185,145 @@ def model_prem(r):
 		vph = 3.5908 + 4.6172 * x
 		vsv = 5.8582 - 1.4678 * x
 		vsh = -1.0839 + 5.7176 * x
+		eta = 3.3687 - 2.4778 * x
+
+	#- Transition zone 1
+	elif (r >= 5971000.0) & (r < 6151000.0):
+		rho = 7.1089 - 3.8045 * x
+		vpv = 20.3926 - 12.2569 * x
+		vph = vpv
+		vsv = 8.9496 - 4.4597 * x
+		vsh = vsv
+		eta = 1.0
+
+	#- Transition zone 2
+	elif (r >= 5771000.0) & (r < 5971000.0):
+		rho = 11.2494 - 8.0298 * x
+		vpv = 39.7027 - 32.6166 * x
+		vph = vpv
+		vsv = 22.3512 - 18.5856 * x
+		vsh = vsv
+		eta = 1.0
+
+	#- Transition zone 3
+	elif (r >= 5701000.0) & (r < 5771000.0):
+		rho = 5.3197 - 1.4836 * x
+		vpv = 19.0957 - 9.8672 * x
+		vph = vpv
+		vsv = 9.9839 - 4.9324 * x
+		vsh = vsv
+		eta = 1.0
+
+	#- Lower mantle 1
+	elif (r >= 5600000.0) & (r < 5701000.0):
+		rho = 7.9565 - 6.4761 * x + 5.5283 * x**2 - 3.0807 * x**3
+		vpv = 29.2766 - 23.6027 * x + 5.5242 * x**2 - 2.5514 * x**3
+		vph = vpv
+		vsv = 22.3459 - 17.2473 * x - 2.0834 * x**2 + 0.9783 * x**3
+		vsh = vsv
+		eta = 1.0 
+
+	#- Lower mantle 2
+	elif (r >= 3630000.0) & (r < 5600000.0):
+		rho = 7.9565 - 6.4761 * x + 5.5283 * x**2 - 3.0807 * x**3
+		vpv = 24.9520 - 40.4673 * x + 51.4832 * x**2 - 26.6419 * x**3
+		vph = vpv
+		vsv = 11.1671 - 13.7818 * x + 17.4575 * x**2 - 9.2777 * x**3
+		vsh = vsv
+		eta = 1.0
+
+	#- Lower mantle 3
+	elif (r >= 3480000.0) & (r < 3630000.0):
+		rho = 7.9565 - 6.4761 * x + 5.5283 * x**2 - 3.0807 * x**3
+		vpv = 15.3891 - 5.3181 * x + 5.5242 * x**2 - 2.5514 * x**3
+		vph = vpv
+		vsv = 6.9254 + 1.4672 * x - 2.0834 * x**2 + 0.9783 * x**3
+		vsh = vsv
+		eta = 1.0
+
+	#- Outer core
+	elif (r >= 1221000.5) & (r < 3480000.0):
+		rho = 12.5815 - 1.2638 * x - 3.6426 * x**2 - 5.5281 * x**3
+		vpv = 11.0487 - 4.0362 * x + 4.8023 * x**2 - 13.5732 * x**3
+		vph = vpv
+		vsv = 0.0
+		vsh = 0.0
+		eta = 1.0
+
+	#- Inner Core
+	elif (r >= 0.0) & (r < 1221000.5):
+		rho = 13.0885 - 8.8381 * x**2
+		vpv = 11.2622 - 6.3640 * x**2
+		vph = vpv
+		vsv = 3.6678 - 4.4475 * x**2
+		vsh = vsv
+		eta = 1.0 
+
+	#- convert to elastic parameters --------------------------------------------------------------
+
+	rho = 1000.0 * rho
+	vpv = 1000.0 * vpv
+	vph = 1000.0 * vph
+	vsv = 1000.0 * vsv
+	vsh = 1000.0 * vsh
+
+	A = rho * vph**2
+	C = rho * vpv**2
+	N = rho * vsh**2
+	L = rho * vsv**2
+	F = eta * (A - 2 * L)
+
+	return rho, A, C, F, L, N
+
+#--------------------------------------------------------------------------------------------------
+#- PREM isotropic
+#--------------------------------------------------------------------------------------------------
+
+def model_prem_iso(r):
+	"""
+	Return rho, A, C, F, L, N for PREM isotropic (Dziewonski & Anderson, PEPI 1981) for 
+	a radius r in m. The reference frequency is 1 Hz. Crust continued into the ocean.
+	"""
+
+	#- normalised radius
+	x = r / 6371000.0
+
+	#- march through the various depth levels -----------------------------------------------------
+
+	#- upper crust
+	if (r >= 6356000.0):
+		rho = 2.6
+		vpv = 5.8
+		vph = vpv
+		vsv = 3.2
+		vsh = vsv
+		eta = 1.0
+
+	#- lower crust
+	elif (r >= 6346000.6) & (r < 6356000.0):
+		rho = 2.9
+		vpv = 6.8
+		vph = vpv
+		vsv = 3.9
+		vsh = vsv
+		eta = 1.0
+
+	#- LID
+	elif (r >= 6291000.0) & (r < 6346000.6):
+		rho = 2.6910 + 0.6924 * x
+		vpv = 4.1875 + 3.9382 * x
+		vph = vpv
+		vsv = 2.1519 + 2.3481 * x
+		vsh = vsv
+		eta = 3.3687 - 2.4778 * x
+
+	#- LVZ
+	elif (r >= 6151000.0) & (r < 6291000.0):
+		rho = 2.6910 + 0.6924 * x
+		vpv = 4.1875 + 3.9382 * x
+		vph = vpv
+		vsv = 2.1519 + 2.3481 * x
+		vsh = vsv
 		eta = 3.3687 - 2.4778 * x
 
 	#- Transition zone 1
