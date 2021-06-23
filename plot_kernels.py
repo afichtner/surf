@@ -1,6 +1,20 @@
+"""
+Plot sensitivity kernels.
+
+:copyright:
+    Andreas Fichtner (andreas.fichtner@erdw.ethz.ch), December 2020
+:license:
+    GNU General Public License, Version 3
+    (http://www.gnu.org/copyleft/gpl.html)
+"""
 
 import numpy as np
 import matplotlib.pyplot as plt
+
+plt.rcParams["font.family"] = "Times"
+plt.rcParams.update({'font.size': 30})
+plt.rcParams['xtick.major.pad']='12'
+plt.rcParams['ytick.major.pad']='12'
 
 def plot_kernels(filename, show=True):
 
@@ -74,6 +88,8 @@ def plot_kernels(filename, show=True):
 
 	#- fundamental kernels
 
+	fig, ax = plt.subplots(1,2,sharey='row',figsize=(30,50))
+
 	plt.subplot(2,3,1)
 	plt.plot(K_rho_0,r,'k')
 	K_rho_0[n-1]=0.0
@@ -81,7 +97,7 @@ def plot_kernels(filename, show=True):
 	plt.plot(line,r,'k--')
 	plt.ylim([rmin,rmax])
 	plt.xlim([-valmax_0,valmax_0])
-	plt.xlabel('density')
+	plt.xlabel(r'$K_\rho^0$ [1/m]')
 	plt.ylabel('radius [km]')
 	plt.grid(True)
 
@@ -92,8 +108,8 @@ def plot_kernels(filename, show=True):
 	plt.plot(line,r,'k--')
 	plt.ylim([rmin,rmax])
 	plt.xlim([-valmax_0,valmax_0])
-	plt.xlabel('A')
-	plt.ylabel('radius [km]')
+	plt.xlabel(r'$K_A$ [1/m]')
+	plt.yticks([])
 	plt.grid(True)
 
 	plt.subplot(2,3,3)
@@ -103,8 +119,8 @@ def plot_kernels(filename, show=True):
 	plt.plot(line,r,'k--')
 	plt.ylim([rmin,rmax])
 	plt.xlim([-valmax_0,valmax_0])
-	plt.xlabel('C')
-	plt.ylabel('radius [km]')
+	plt.xlabel(r'$K_C$ [1/m]')
+	plt.yticks([])
 	plt.grid(True)
 
 	plt.subplot(2,3,4)
@@ -114,7 +130,7 @@ def plot_kernels(filename, show=True):
 	plt.plot(line,r,'k--')
 	plt.ylim([rmin,rmax])
 	plt.xlim([-valmax_0,valmax_0])
-	plt.xlabel('F')
+	plt.xlabel(r'$K_F$ [1/m]')
 	plt.ylabel('radius [km]')
 	plt.grid(True)
 
@@ -125,8 +141,8 @@ def plot_kernels(filename, show=True):
 	plt.plot(line,r,'k--')
 	plt.ylim([rmin,rmax])
 	plt.xlim([-valmax_0,valmax_0])
-	plt.xlabel('L')
-	plt.ylabel('radius [km]')
+	plt.xlabel(r'$K_L$ [1/m]')
+	plt.yticks([])
 	plt.grid(True)
 
 	plt.subplot(2,3,6)
@@ -136,13 +152,15 @@ def plot_kernels(filename, show=True):
 	plt.plot(line,r,'k--')
 	plt.ylim([rmin,rmax])
 	plt.xlim([-valmax_0,valmax_0])
-	plt.xlabel('N')
-	plt.ylabel('radius [km]')
+	plt.xlabel(r'$K_N$ [1/m]')
+	plt.yticks([])
 	plt.grid(True)
 	
 	if show==True: plt.show()
 
 	#- kernels in velocity parametrisation
+
+	fig, ax = plt.subplots(1,2,sharey='row',figsize=(30,50))
 
 	plt.subplot(2,3,1)
 	plt.plot(K_rho,r,'k')
@@ -151,7 +169,7 @@ def plot_kernels(filename, show=True):
 	plt.plot(line,r,'k--')
 	plt.ylim([rmin,rmax])
 	plt.xlim([-valmax,valmax])
-	plt.xlabel('density')
+	plt.xlabel(r'$K_\rho$ [1/m]')
 	plt.ylabel('radius [km]')
 	plt.grid(True)
 
@@ -162,8 +180,8 @@ def plot_kernels(filename, show=True):
 	plt.plot(line,r,'k--')
 	plt.ylim([rmin,rmax])
 	plt.xlim([-valmax,valmax])
-	plt.xlabel('vph')
-	plt.ylabel('radius [km]')
+	plt.xlabel(r'$K_{\alpha_h}$ [1/m]')
+	plt.yticks([])
 	plt.grid(True)
 
 	plt.subplot(2,3,3)
@@ -173,8 +191,8 @@ def plot_kernels(filename, show=True):
 	plt.plot(line,r,'k--')
 	plt.ylim([rmin,rmax])
 	plt.xlim([-valmax,valmax])
-	plt.xlabel('vpv')
-	plt.ylabel('radius [km]')
+	plt.xlabel(r'$K_{\alpha_v}$ [m/s]')
+	plt.yticks([])
 	plt.grid(True)
 
 	plt.subplot(2,3,4)
@@ -184,7 +202,7 @@ def plot_kernels(filename, show=True):
 	plt.plot(line,r,'k--')
 	plt.ylim([rmin,rmax])
 	plt.xlim([-valmax,valmax])
-	plt.xlabel('vsh')
+	plt.xlabel(r'$K_{\beta_h}$ [m/1]')
 	plt.ylabel('radius [km]')
 	plt.grid(True)
 
@@ -195,8 +213,8 @@ def plot_kernels(filename, show=True):
 	plt.plot(line,r,'k--')
 	plt.ylim([rmin,rmax])
 	plt.xlim([-valmax,valmax])
-	plt.xlabel('vsv')
-	plt.ylabel('radius [km]')
+	plt.xlabel(r'$K_{\beta_v}$ [1/m]')
+	plt.yticks([])
 	plt.grid(True)
 
 	plt.subplot(2,3,6)
@@ -206,8 +224,8 @@ def plot_kernels(filename, show=True):
 	plt.plot(line,r,'k--')
 	plt.ylim([rmin,rmax])
 	plt.xlim([-valmax,valmax])
-	plt.xlabel('eta')
-	plt.ylabel('radius [km]')
+	plt.xlabel(r'$K_\eta$ [1/m]')
+	plt.yticks([])
 	plt.grid(True)
 	
 	if show==True: plt.show()

@@ -2,7 +2,7 @@
 Computation dispersion curves and stress-displacement functions for PSV propagation.
 
 :copyright:
-    Andreas Fichtner (andreas.fichtner@erdw.ethz.ch), August 2013
+    Andreas Fichtner (andreas.fichtner@erdw.ethz.ch), December 2020
 :license:
     GNU General Public License, Version 3
     (http://www.gnu.org/copyleft/gpl.html)
@@ -30,8 +30,6 @@ def dispersion_psv(xml_input):
 	inp = inp[1]
 
 	verbose = int(inp["verbose"])
-	plot_dispersion = int(inp["plot_dispersion"])
-	plot_amplitudes = int(inp["plot_amplitudes"])
 
 	model = inp["model"]
 
@@ -42,22 +40,22 @@ def dispersion_psv(xml_input):
 	r_min = float(inp["integration"]["starting_radius"])
 	dr = float(inp["integration"]["radius_sampling"])
 
-	T_min = float(inp["T_c_sampling"]["T_min"])
-	T_max = float(inp["T_c_sampling"]["T_max"])
-	dT = float(inp["T_c_sampling"]["dT"])
+	f_min = float(inp["f_c_sampling"]["f_min"])
+	f_max = float(inp["f_c_sampling"]["f_max"])
+	df = float(inp["f_c_sampling"]["df"])
 
-	c_min = float(inp["T_c_sampling"]["c_min"])
-	c_max = float(inp["T_c_sampling"]["c_max"])
-	dc = float(inp["T_c_sampling"]["dc"])
+	c_min = float(inp["f_c_sampling"]["c_min"])
+	c_max = float(inp["f_c_sampling"]["c_max"])
+	dc = float(inp["f_c_sampling"]["dc"])
 
 	#- initialisations ----------------------------------------------------------------------------
 
-	T = np.arange(T_min,T_max + dT,dT,dtype=float)
+	f = np.arange(f_min,f_max + df,df,dtype=float)
 	c = np.arange(c_min,c_max + dc,dc,dtype=float)
-	omega = 2 * np.pi / T
+	omega = 2 * np.pi * f
 
 	mode = []
-	periods = []
+	frequencies = []
 	phase_velocities = []
 	group_velocities = []
 
@@ -75,10 +73,11 @@ def dispersion_psv(xml_input):
 	#- root-finding algorithm ---------------------------------------------------------------------
 
 	#- loop over angular frequencies
-	for _omega in omega:
+	for _f in f:
 		
-		mode_count = 0.0
+		_omega = 2.0 * np.pi * _f
 		k = _omega / c
+		mode_count = 0.0
 
 		#- loop over trial wavenumbers
 		r_left = 0.0
@@ -129,16 +128,19 @@ def dispersion_psv(xml_input):
 				r2 = r21 + q2 * r22
 				r3 = r31 + q2 * r32
 				r4 = r41 + q2 * r42
-				#- normalise to vertical displacement at the surface
-				mm = r1[nr]
-				r1 = r1 / mm
-				r2 = r2 / mm
-				r3 = r3 / mm
-				r4 = r4 / mm
+				#- normalise to displacement amplitude at the surface
+				mm = np.sqrt( r1[nr]**2 + r3[nr]**2 )
+				if mm > 0.0:
+					r1 = r1 / mm
+					r2 = r2 / mm
+					r3 = r3 / mm
+					r4 = r4 / mm
+				else:
+					print('integration possibly unstable')
 
 				#- phase velocity
 
-				periods.append(2*np.pi/_omega)
+				frequencies.append(_f)
 				phase_velocities.append(_omega / k_new)
 
 				#- group velocity
@@ -148,39 +150,22 @@ def dispersion_psv(xml_input):
 
 				#- kernels
 
-				kpsv.kernels_psv(r, r1, r2, r3, r4, _omega, k_new, I3, rho, A, C, F, L, N, write_output, output_directory, tag)
+				kpsv.kernels_psv(r, r1, r2, r3, r4, _omega, k_new, U, I1, rho, A, C, F, L, N, write_output, output_directory, tag)
 
 				#==================================================================================
 				#- screen output and displacement function files ----------------------------------
 				#==================================================================================
 
+				cc=_omega/k_new
+
 				#- plot and print to screen
 				if verbose:
-					print "T="+str(2*np.pi/_omega)+" s, c="+str(_omega / k_new)+" m/s, U="+str(U)+" m/s"
-				if plot_amplitudes:
-					f=plt.figure()
-					f.text(0.5,0.95,"T="+str(2*np.pi/_omega)+" s, c="+str(_omega / k_new)+" m/s",horizontalalignment="center",verticalalignment="top")
-					plt.subplot(2,2,1)
-					plt.plot(r, r1)
-					plt.xlabel("radius [m]")
-					plt.title("vertical displacement")
-					plt.subplot(2,2,2)
-					plt.plot(r, r2)
-					plt.xlabel("radius [m]")
-					plt.title("vertical stress")
-					plt.subplot(2,2,3)
-					plt.plot(r, r3)
-					plt.xlabel("radius [m]")
-					plt.title("horizontal displacement")
-					plt.subplot(2,2,4)
-					plt.plot(r, r4)
-					plt.xlabel("radius [m]")
-					plt.title("horizontal stress")
-					plt.show()
+					message=f"f={_f:.3f}"+f" Hz, c={cc:.3f}"+f" m/s, U={U:.3f}"+" m/s"
+					print(message)
 
 				#- write output
 				if write_output:
-					identifier = "T="+str(2*np.pi/_omega)+".c="+str(_omega / k_new)
+					identifier = f"f={_f:.3f}"+f".c={cc:.3f}"
 					fid = open(output_directory+"displacement_psv."+tag+"."+identifier,"w")
 					fid.write("number of vertical sampling points\n")
 					fid.write(str(len(r))+"\n")
@@ -201,26 +186,10 @@ def dispersion_psv(xml_input):
 
 		#- write dispersion curve
 		fid = open(output_directory+"dispersion_psv."+tag,"w")
-		for k in np.arange(len(periods)):
-			fid.write(str(periods[k])+" "+str(phase_velocities[k])+" "+str(group_velocities[k])+"\n")
+		for k in np.arange(len(frequencies)):
+			fid.write(str(frequencies[k])+" "+str(phase_velocities[k])+" "+str(group_velocities[k])+"\n")
 		fid.close()
-
-	#- plot ---------------------------------------------------------------------------------------
-
-	if plot_dispersion:
-
-		for n in np.arange(len(periods)):
-
-			plt.plot(periods[n],phase_velocities[n],'ko')
-			#if mode[n]==1.0:
-			plt.plot(periods[n],group_velocities[n],'ro')
-		
-		plt.margins(0.2)
-		plt.xlabel("period [s]")
-		plt.ylabel("phase velocity (black), group velocity (red) [m/s]")
-		plt.title("PSV dispersion")
-		plt.show()
 
 	#- return -------------------------------------------------------------------------------------
 
-	return periods, phase_velocities
+	return frequencies, phase_velocities, group_velocities

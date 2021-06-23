@@ -2,7 +2,7 @@
 Earth models for surface wave calculations.
 
 :copyright:
-    Andreas Fichtner (andreas.fichtner@erdw.ethz.ch), August 2013
+    Andreas Fichtner (andreas.fichtner@erdw.ethz.ch), December 2020
 :license:
     GNU General Public License, Version 3
     (http://www.gnu.org/copyleft/gpl.html)
@@ -42,19 +42,19 @@ def model_onelayer(r):
 
 	#- march through the various depth levels -----------------------------------------------------
 
-	if (r > 6341000.0):
-		rho = 2.6
+	if (r > 6361000.0):
+		rho = 2.7
 		vpv = 5.8
 		vph = vpv
-		vsv = 3.2
+		vsv = 2.0
 		vsh = vsv
 		eta = 1.0
 
 	else:
-		rho = 3.6
+		rho = 3.1
 		vpv = 7.8
 		vph = vpv
-		vsv = 4.2
+		vsv = 3.0
 		vsh = vsv
 		eta = 1.0
 

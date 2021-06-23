@@ -1,0 +1,4 @@
+#- ignore OUTPUT and FIGURE directories
+OUTPUT/*
+FIGURES/*
+*.pyc

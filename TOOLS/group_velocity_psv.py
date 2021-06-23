@@ -2,7 +2,7 @@
 Compute group velocity for Rayleigh waves.
 
 :copyright:
-    Andreas Fichtner (andreas.fichtner@erdw.ethz.ch), November 2013
+    Andreas Fichtner (andreas.fichtner@erdw.ethz.ch), December 2020
 :license:
     GNU General Public License, Version 3
     (http://www.gnu.org/copyleft/gpl.html)
