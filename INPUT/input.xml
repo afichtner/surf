@@ -28,8 +28,8 @@
     <f_c_sampling>
         <!--minimum and maximum frequency in Hz, frequency sampling in Hz-->
         <f_min>0.05</f_min>
-        <f_max>0.40</f_max>
-        <df>0.01</df>
+        <f_max>0.70</f_max>
+        <df>0.05</df>
         <!--minimum and maximum trial phase velocities, phase velocity sampling, all in m/s-->
         <c_min>1500.0</c_min>
         <c_max>3000.0</c_max>

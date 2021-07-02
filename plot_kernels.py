@@ -22,7 +22,7 @@ def plot_kernels(filename, show=True):
 		Plot sensitivity kernels for Love or Rayleigh waves. 
 		plot_kernels_sh(filename,show=True)
 		filename: filename including path
-		show: set to True for showing the plot, and to False for not showing it. show=False can be useful when plotting multiple displacement functions.
+		show: set to True for showing the plot, and to False for not showing it. show=False can be useful when plotting multiple kernels.
 	"""
 
 	#- open file and read header information ------------------------------------------------------
@@ -88,7 +88,7 @@ def plot_kernels(filename, show=True):
 
 	#- fundamental kernels
 
-	fig, ax = plt.subplots(1,2,sharey='row',figsize=(30,50))
+	fig, ax = plt.subplots(1,2,sharey='row',figsize=(20,40))
 
 	plt.subplot(2,3,1)
 	plt.plot(K_rho_0,r,'k')
@@ -229,3 +229,11 @@ def plot_kernels(filename, show=True):
 	plt.grid(True)
 	
 	if show==True: plt.show()
+
+	#- return -------------------------------------------------------------------------------------
+
+	return 1000.0*r, K_rho, K_vph, K_vpv, K_vsh, K_vsv, K_eta
+
+
+
+

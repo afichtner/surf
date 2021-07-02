@@ -56,7 +56,7 @@ def plot_displacement_sh(filename,show=True):
 
 	#- plot results -------------------------------------------------------------------------------
 
-	fig, (ax1, ax2) = plt.subplots(1,2,sharey='row',figsize=(30,50))
+	fig, (ax1, ax2) = plt.subplots(1,2,sharey='row',figsize=(15,25))
 
 	ax1.plot(l1,r,'k')
 	ax2.plot(l2,r,'k')

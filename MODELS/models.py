@@ -28,6 +28,9 @@ def models(r, model):
 	elif model=="ONELAYER":
 		return model_onelayer(r)
 
+	elif model=="ONELAYER_pert":
+		return model_onelayer_pert(r)
+
 	elif model=="GUTENBERG":
 		return model_gutenberg(r)
 
@@ -48,6 +51,49 @@ def model_onelayer(r):
 		vph = vpv
 		vsv = 2.0
 		vsh = vsv
+		eta = 1.0
+
+	else:
+		rho = 3.1
+		vpv = 7.8
+		vph = vpv
+		vsv = 3.0
+		vsh = vsv
+		eta = 1.0
+
+	#- convert to elastic parameters --------------------------------------------------------------
+
+	rho = 1000.0 * rho
+	vpv = 1000.0 * vpv
+	vph = 1000.0 * vph
+	vsv = 1000.0 * vsv
+	vsh = 1000.0 * vsh
+
+	A = rho * vph**2
+	C = rho * vpv**2
+	N = rho * vsh**2
+	L = rho * vsv**2
+	F = eta * (A - 2 * L)
+
+	return rho, A, C, F, L, N
+
+#--------------------------------------------------------------------------------------------------
+#- onelayer
+#--------------------------------------------------------------------------------------------------
+
+def model_onelayer_pert(r):
+	"""
+	One-layered Earth model for a radius r in m. Perturbed for gradient testing.
+	"""
+
+	#- march through the various depth levels -----------------------------------------------------
+
+	if (r > 6361000.0):
+		rho = 2.7
+		vpv = 5.8
+		vph = vpv
+		vsv = 2.0
+		vsh = vsv + 0.01 * vsv
 		eta = 1.0
 
 	else:
