@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<input_parameters>
+
+    <!--write some screen output **************************************************************** -->
+    <verbose>1</verbose>
+
+    <!--Earth model-->
+    <model>ONELAYER_pert</model>   
+
+    <!--output specifications ********************************************************** -->
+    <output>
+        <!--write output or not (1 or 0)-->
+        <write_output>1</write_output>
+        <directory>OUTPUT/</directory>
+        <tag>onelayer_pert</tag>
+    </output>
+    
+    <!--vertical integration parameters *********************************************** -->
+    <integration>
+        <!--starting depth of the integration in m-->
+        <starting_radius>6321000.0</starting_radius>
+        <!--depth sampling in m-->
+        <radius_sampling>100.0</radius_sampling>
+    </integration>
+
+    <!--sampling in frequency-phase velocity space **************************************** -->
+    <f_c_sampling>
+        <!--minimum and maximum frequency in Hz, frequency sampling in Hz-->
+        <f_min>0.05</f_min>
+        <f_max>0.70</f_max>
+        <df>0.05</df>
+        <!--minimum and maximum trial phase velocities, phase velocity sampling, all in m/s-->
+        <c_min>1500.0</c_min>
+        <c_max>3000.0</c_max>
+        <dc>20.0</dc>
+    </f_c_sampling>
+    
+</input_parameters>
