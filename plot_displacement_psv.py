@@ -54,7 +54,7 @@ def plot_displacement_psv(filename,show=True):
 
 	#- plot results -------------------------------------------------------------------------------
 
-	fig, (ax1, ax2) = plt.subplots(1,2,sharey='row',figsize=(30,50))
+	fig, (ax1, ax2) = plt.subplots(1,2,sharey='row',figsize=(15,25))
 
 	ax1.plot(r1,r,'k')
 	ax2.plot(r2,r,'k')
