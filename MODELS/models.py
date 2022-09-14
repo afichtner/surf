@@ -92,8 +92,8 @@ def model_onelayer_pert(r):
 		rho = 2.7
 		vpv = 5.8
 		vph = vpv
-		vsv = 2.0
-		vsh = vsv + 0.01 * vsv
+		vsv = 2.0 + 0.02
+		vsh = vsv 
 		eta = 1.0
 
 	else:
