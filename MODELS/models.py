@@ -2,11 +2,13 @@
 Earth models for surface wave calculations.
 
 :copyright:
-    Andreas Fichtner (andreas.fichtner@erdw.ethz.ch), December 2020
+    Andreas Fichtner (andreas.fichtner@erdw.ethz.ch), September 2022
 :license:
     GNU General Public License, Version 3
     (http://www.gnu.org/copyleft/gpl.html)
 """
+
+import numpy as np
 
 #--------------------------------------------------------------------------------------------------
 #- wrapper around the various Earth models
@@ -19,20 +21,30 @@ def models(r, model):
 	Everything in SI units, i.e. radius in m
 	"""
 
-	if model=="PREM":
+	if model == "PREM":
 		return model_prem(r)
 
-	elif model=="PREM_iso":
+	elif model == "PREM_iso":
 		return model_prem_iso(r)
 
-	elif model=="ONELAYER":
+	elif model == "ONELAYER":
 		return model_onelayer(r)
 
-	elif model=="ONELAYER_pert":
+	elif model == "ONELAYER_pert":
 		return model_onelayer_pert(r)
 
-	elif model=="GUTENBERG":
+	elif model == "GUTENBERG":
 		return model_gutenberg(r)
+
+	elif model == "EXTERNAL":
+		r = np.load("./MODELS/EXTERNAL/r.npy")
+		rho = np.load("./MODELS/EXTERNAL/rho.npy")
+		A = np.load("./MODELS/EXTERNAL/A.npy")
+		C = np.load("./MODELS/EXTERNAL/C.npy")
+		F = np.load("./MODELS/EXTERNAL/F.npy")
+		L = np.load("./MODELS/EXTERNAL/L.npy")
+		N = np.load("./MODELS/EXTERNAL/N.npy")
+		return r, rho, A, C, F, L, N
 
 #--------------------------------------------------------------------------------------------------
 #- onelayer

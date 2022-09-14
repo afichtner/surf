@@ -1,5 +1,15 @@
 <?xml version='1.0' encoding='UTF-8'?>
 
+<!--
+Standard input file (example) for surf.
+
+:copyright:
+    Andreas Fichtner (andreas.fichtner@erdw.ethz.ch), September 2022
+:license:
+    GNU General Public License, Version 3
+    (http://www.gnu.org/copyleft/gpl.html)
+-->
+
 <input_parameters>
 
     <!--write some screen output **************************************************************** -->

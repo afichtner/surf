@@ -2,7 +2,7 @@
 Integrate the Love wave equations.
 
 :copyright:
-    Andreas Fichtner (andreas.fichtner@erdw.ethz.ch), August 2013
+    Andreas Fichtner (andreas.fichtner@erdw.ethz.ch), September 2022
 :license:
     GNU General Public License, Version 3
     (http://www.gnu.org/copyleft/gpl.html)
@@ -49,17 +49,32 @@ def integrate_sh(r_min, dr, omega, k, model):
 	r:			radius vector in m
 	"""
 
+	#- Packages.
 	import numpy as np
 	import MODELS.models as m
 	import matplotlib.pyplot as plt
 
+	#- Radius of the Earth (or other planetary body) [m].
+	Re = 6371000.0
+
 	#- initialisation -----------------------------------------------------------------------------
 
-	r = np.arange(r_min, 6371000.0 + dr, dr, dtype=float)
+	if model == "EXTERNAL":
+		r, rho, A, C, F, L, N = m.models(None, model)
+
+	else:
+		r = np.arange(r_min, Re + dr, dr, dtype=float)
+		rho = np.zeros(len(r))
+		A = np.zeros(len(r))
+		C = np.zeros(len(r))
+		F = np.zeros(len(r))
+		L = np.zeros(len(r))
+		N = np.zeros(len(r))
+		for n in np.arange(len(r)):
+			rho[n], A[n], C[n], F[n], L[n], N[n] = m.models(r[n], model)
+
 	l1 = np.zeros(len(r))
 	l2 = np.zeros(len(r))
-
-	rho, A, C, F, L, N = m.models(r[0], model)
 
 	#- check if phase velocity is below S velocity ------------------------------------------------
 	if (1==1): #(k**2 - (omega**2 * rho / L)) > 0.0:
@@ -74,20 +89,17 @@ def integrate_sh(r_min, dr, omega, k, model):
 
 			#- compute Runge-Kutta coeficients for l1 and l2
 
-			rho, A, C, F, L, N = m.models(r[n], model)
-			K1_1 = f1(L, l2[n])
-			K2_1 = f2(N, rho, k, omega, l1[n]) 
+			K1_1 = f1(L[n], l2[n])
+			K2_1 = f2(N[n], rho[n], k, omega, l1[n]) 
 
-			rho, A, C, F, L, N = m.models(r[n] + dr / 2.0, model)
-			K1_2 = f1(L, l2[n] + K2_1 * dr / 2.0)
-			K2_2 = f2(N, rho, k, omega, l1[n] + K1_1 * dr / 2.0)
+			K1_2 = f1(L[n], l2[n] + K2_1 * dr / 2.0)
+			K2_2 = f2(N[n], rho[n], k, omega, l1[n] + K1_1 * dr / 2.0)
 
-			K1_3 = f1(L, l2[n] + K2_2 * dr / 2.0)
-			K2_3 = f2(N, rho, k, omega, l1[n] + K1_2 * dr / 2.0)
+			K1_3 = f1(L[n], l2[n] + K2_2 * dr / 2.0)
+			K2_3 = f2(N[n], rho[n], k, omega, l1[n] + K1_2 * dr / 2.0)
 
-			rho, A, C, F, L, N = m.models(r[n] + dr, model)
-			K1_4 = f1(L, l2[n] + K2_3 * dr)
-			K2_4 = f2(N, rho, k, omega, l1[n] + K1_3 * dr)
+			K1_4 = f1(L[n+1], l2[n] + K2_3 * dr)
+			K2_4 = f2(N[n+1], rho[n+1], k, omega, l1[n] + K1_3 * dr)
 
 			#- update
 

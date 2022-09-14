@@ -2,11 +2,13 @@
 Computation dispersion curves and stress-displacement functions for PSV propagation.
 
 :copyright:
-    Andreas Fichtner (andreas.fichtner@erdw.ethz.ch), December 2020
+    Andreas Fichtner (andreas.fichtner@erdw.ethz.ch), September 2022
 :license:
     GNU General Public License, Version 3
     (http://www.gnu.org/copyleft/gpl.html)
 """
+
+#- Packages.
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -16,6 +18,9 @@ import TOOLS.integrate_psv as ipsv
 import TOOLS.group_velocity_psv as vg
 import TOOLS.kernels_psv as kpsv
 import MODELS.models as m
+
+#- Radius of the Earth (or other planetary body) [m].
+Re = 6371000.0
 
 def dispersion_psv(xml_input):
 	"""
@@ -59,16 +64,20 @@ def dispersion_psv(xml_input):
 	phase_velocities = []
 	group_velocities = []
 
-	r = np.arange(r_min, 6371000.0 + dr, dr, dtype=float)
-	rho = np.zeros(len(r))
-	A = np.zeros(len(r))
-	C = np.zeros(len(r))
-	F = np.zeros(len(r))
-	L = np.zeros(len(r))
-	N = np.zeros(len(r))
+	if model == "EXTERNAL":
+		r, rho, A, C, F, L, N = m.models(None, model)
 
-	for n in np.arange(len(r)):
-		rho[n], A[n], C[n], F[n], L[n], N[n] = m.models(r[n], model)
+	else:
+		r = np.arange(r_min, Re + dr, dr, dtype=float)
+		rho = np.zeros(len(r))
+		A = np.zeros(len(r))
+		C = np.zeros(len(r))
+		F = np.zeros(len(r))
+		L = np.zeros(len(r))
+		N = np.zeros(len(r))
+
+		for n in np.arange(len(r)):
+			rho[n], A[n], C[n], F[n], L[n], N[n] = m.models(r[n], model)
 
 	#- root-finding algorithm ---------------------------------------------------------------------
 

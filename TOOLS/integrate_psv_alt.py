@@ -49,23 +49,38 @@ def integrate_psv_alt(r_min, dr, omega, k, model):
 	r:			radius vector in m
 	"""
 
+	#- Packages.
 	import numpy as np
 	import MODELS.models as m
 	import matplotlib.pyplot as plt
 
+	#- Radius of the Earth (or other planetary body) [m].
+	Re = 6371000.0
+
 	#- initialisation -----------------------------------------------------------------------------
 
-	r = np.arange(r_min, 6371000.0 + dr, dr, dtype=float)
+	if model == "EXTERNAL":
+		r, rho, A, C, F, L, N = m.models(None, model)
+
+	else:
+		r = np.arange(r_min, Re + dr, dr, dtype=float)
+		rho = np.zeros(len(r))
+		A = np.zeros(len(r))
+		C = np.zeros(len(r))
+		F = np.zeros(len(r))
+		L = np.zeros(len(r))
+		N = np.zeros(len(r))
+		for n in np.arange(len(r)):
+			rho[n], A[n], C[n], F[n], L[n], N[n] = m.models(r[n], model)
+
 	r1 = np.zeros(len(r))
 	r2 = np.zeros(len(r))
 	r3 = np.zeros(len(r))
 	r4 = np.zeros(len(r))
 	r5 = np.zeros(len(r))
 
-	rho, A, C, F, L, N = m.models(r[0], model)
-
 	#- check if phase velocity is below S velocity ------------------------------------------------
-	if (k**2 - (omega**2 * rho / L)) > 0.0:
+	if (k**2 - (omega**2 * rho[0] / L[0])) > 0.0:
 
 		#- set initial values
 		r1[0] = 0.0	
@@ -78,34 +93,31 @@ def integrate_psv_alt(r_min, dr, omega, k, model):
 
 		for n in np.arange(len(r)-1):
 
-			#- compute Runge-Kutta coeficients for l1 and l2
+			#- compute Runge-Kutta coefficients for l1 and l2
 
-			rho, A, C, F, L, N = m.models(r[n], model)
-			K1_1 = f1(C,L,r4[n],r5[n])
-			K2_1 = f2(rho,A,C,F,omega,k,r4[n],r5[n])
-			K3_1 = f3(C,F,k,r4[n],r5[n])
-			K4_1 = f4(rho,A,C,F,omega,k,r1[n],r2[n],r3[n])
-			K5_1 = f5(rho,L,omega,k,r1[n],r2[n],r3[n]) 
+			K1_1 = f1(C[n],L[n],r4[n],r5[n])
+			K2_1 = f2(rho[n],A[n],C[n],F[n],omega,k,r4[n],r5[n])
+			K3_1 = f3(C[n],F[n],k,r4[n],r5[n])
+			K4_1 = f4(rho[n],A[n],C[n],F[n],omega,k,r1[n],r2[n],r3[n])
+			K5_1 = f5(rho[n],L[n],omega,k,r1[n],r2[n],r3[n]) 
 
-			rho, A, C, F, L, N = m.models(r[n] + dr / 2.0, model)
-			K1_2 = f1(C,L,r4[n]+0.5*K4_1*dr,r5[n]+0.5*K5_1*dr)
-			K2_2 = f2(rho,A,C,F,omega,k,r4[n]+0.5*K4_1*dr,r5[n]+0.5*K5_1*dr)
-			K3_2 = f3(C,F,k,r4[n]+0.5*K4_1*dr,r5[n]+0.5*K5_1*dr)
-			K4_2 = f4(rho,A,C,F,omega,k,r1[n]+0.5*K1_1*dr,r2[n]+0.5*K2_1*dr,r3[n]+0.5*K3_1*dr)
-			K5_2 = f5(rho,L,omega,k,r1[n]+0.5*K1_1*dr,r2[n]+0.5*K2_1*dr,r3[n]+0.5*K3_1*dr) 
+			K1_2 = f1(C[n],L[n],r4[n]+0.5*K4_1*dr,r5[n]+0.5*K5_1*dr)
+			K2_2 = f2(rho[n],A[n],C[n],F[n],omega,k,r4[n]+0.5*K4_1*dr,r5[n]+0.5*K5_1*dr)
+			K3_2 = f3(C[n],F[n],k,r4[n]+0.5*K4_1*dr,r5[n]+0.5*K5_1*dr)
+			K4_2 = f4(rho[n],A[n],C[n],F[n],omega,k,r1[n]+0.5*K1_1*dr,r2[n]+0.5*K2_1*dr,r3[n]+0.5*K3_1*dr)
+			K5_2 = f5(rho[n],L[n],omega,k,r1[n]+0.5*K1_1*dr,r2[n]+0.5*K2_1*dr,r3[n]+0.5*K3_1*dr) 
 
-			K1_3 = f1(C,L,r4[n]+0.5*K4_2*dr,r5[n]+0.5*K5_2*dr)
-			K2_3 = f2(rho,A,C,F,omega,k,r4[n]+0.5*K4_2*dr,r5[n]+0.5*K5_2*dr)
-			K3_3 = f3(C,F,k,r4[n]+0.5*K4_2*dr,r5[n]+0.5*K5_2*dr)
-			K4_3 = f4(rho,A,C,F,omega,k,r1[n]+0.5*K1_2*dr,r2[n]+0.5*K2_2*dr,r3[n]+0.5*K3_2*dr)
-			K5_3 = f5(rho,L,omega,k,r1[n]+0.5*K1_2*dr,r2[n]+0.5*K2_2*dr,r3[n]+0.5*K3_2*dr) 
+			K1_3 = f1(C[n],L[n],r4[n]+0.5*K4_2*dr,r5[n]+0.5*K5_2*dr)
+			K2_3 = f2(rho[n],A[n],C[n],F[n],omega,k,r4[n]+0.5*K4_2*dr,r5[n]+0.5*K5_2*dr)
+			K3_3 = f3(C[n],F[n],k,r4[n]+0.5*K4_2*dr,r5[n]+0.5*K5_2*dr)
+			K4_3 = f4(rho[n],A[n],C[n],F[n],omega,k,r1[n]+0.5*K1_2*dr,r2[n]+0.5*K2_2*dr,r3[n]+0.5*K3_2*dr)
+			K5_3 = f5(rho[n],L[n],omega,k,r1[n]+0.5*K1_2*dr,r2[n]+0.5*K2_2*dr,r3[n]+0.5*K3_2*dr) 
 
-			rho, A, C, F, L, N = m.models(r[n] + dr, model)
-			K1_4 = f1(C,L,r4[n]+K4_3*dr,r5[n]+K5_3*dr)
-			K2_4 = f2(rho,A,C,F,omega,k,r4[n]+K4_3*dr,r5[n]+K5_3*dr)
-			K3_4 = f3(C,F,k,r4[n]+K4_3*dr,r5[n]+K5_3*dr)
-			K4_4 = f4(rho,A,C,F,omega,k,r1[n]+K1_3*dr,r2[n]+K2_3*dr,r3[n]+K3_3*dr)
-			K5_4 = f5(rho,L,omega,k,r1[n]+K1_3*dr,r2[n]+K2_3*dr,r3[n]+K3_3*dr) 
+			K1_4 = f1(C[n+1],L[n+1],r4[n]+K4_3*dr,r5[n]+K5_3*dr)
+			K2_4 = f2(rho[n+1],A[n+1],C[n+1],F[n+1],omega,k,r4[n]+K4_3*dr,r5[n]+K5_3*dr)
+			K3_4 = f3(C[n+1],F[n+1],k,r4[n]+K4_3*dr,r5[n]+K5_3*dr)
+			K4_4 = f4(rho[n+1],A[n+1],C[n+1],F[n+1],omega,k,r1[n]+K1_3*dr,r2[n]+K2_3*dr,r3[n]+K3_3*dr)
+			K5_4 = f5(rho[n+1],L[n+1],omega,k,r1[n]+K1_3*dr,r2[n]+K2_3*dr,r3[n]+K3_3*dr) 
 
 			#- update
 
