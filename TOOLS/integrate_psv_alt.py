@@ -10,22 +10,36 @@ Only used to find zeroes of the characteristic function in a stable way.
     (http://www.gnu.org/copyleft/gpl.html)
 """
 
+#- Packages.
+import numpy as np
+from numba import jit
+import MODELS.models as m
+import matplotlib.pyplot as plt
+
+#- Radius of the Earth (or other planetary body) [m].
+Re = 6371000.0
+
 #--------------------------------------------------------------------------------------------------
 #- right-hand sides of the alternative first-order system
 #--------------------------------------------------------------------------------------------------
 
+@jit(nopython=True)
 def f1(C,L,r4,r5):
 	return (r4 / L - r5 / C)
 
+@jit(nopython=True)
 def f2(rho,A,C,F,omega,k,r4,r5):
 	return (-omega**2 * rho * r4 + (omega**2 * rho - k**2 * (A - F**2 / C)) * r5)
 
+@jit(nopython=True)
 def f3(C,F,k,r4,r5):
 	return (k * r4 + k * F * r5 / C)
 
+@jit(nopython=True)
 def f4(rho,A,C,F,omega,k,r1,r2,r3):
 	return ((-omega**2 * rho + k**2 * (A - F**2 / C)) * r1 + r2 / C - 2 * k * F * r3 / C)
 
+@jit(nopython=True)
 def f5(rho,L,omega,k,r1,r2,r3):
 	return (omega**2 * rho * r1 - r2 / L - 2 * k * r3)
 
@@ -34,6 +48,7 @@ def f5(rho,L,omega,k,r1,r2,r3):
 #- numerical integration
 #--------------------------------------------------------------------------------------------------
 
+@jit(nopython=True)
 def integrate_psv_alt(r_min, dr, omega, k, r, rho, A, C, F, L, N):
 	"""
 	Integrate first-order system for a fixed circular frequency omega and a fixed wavenumber k.
@@ -48,14 +63,6 @@ def integrate_psv_alt(r_min, dr, omega, k, r, rho, A, C, F, L, N):
 	r1, ...:	variables of the alternative Rayleigh wave system
 	r:			radius vector in m
 	"""
-
-	#- Packages.
-	import numpy as np
-	import MODELS.models as m
-	import matplotlib.pyplot as plt
-
-	#- Radius of the Earth (or other planetary body) [m].
-	Re = 6371000.0
 
 	#- initialisation -----------------------------------------------------------------------------
 

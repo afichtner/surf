@@ -8,12 +8,20 @@ Integrate the Love wave equations.
     (http://www.gnu.org/copyleft/gpl.html)
 """
 
+#- Packages.
+from numba import jit
+import numpy as np
+import MODELS.models as m
+import matplotlib.pyplot as plt
 
+#- Radius of the Earth (or other planetary body) [m].
+Re = 6371000.0
 
 #--------------------------------------------------------------------------------------------------
 #- displacement function
 #--------------------------------------------------------------------------------------------------
 
+@jit(nopython=True)
 def f1(L,l2):
 	"""
 	Right-hand side of the displacement derivative for SH propagation.
@@ -24,6 +32,7 @@ def f1(L,l2):
 #- stress function
 #--------------------------------------------------------------------------------------------------
 
+@jit(nopython=True)
 def f2(N, rho, k, omega, l1):
 	"""
 	Right-hand side of the stress derivative for SH propagation.
@@ -34,6 +43,7 @@ def f2(N, rho, k, omega, l1):
 #- numerical integration
 #--------------------------------------------------------------------------------------------------
 
+@jit(nopython=True)
 def integrate_sh(r_min, dr, omega, k, r, rho, A, C, F, L, N):
 	"""
 	Integrate first-order system for a fixed circular frequency omega and a fixed wavenumber k.
@@ -48,14 +58,6 @@ def integrate_sh(r_min, dr, omega, k, r, rho, A, C, F, L, N):
 	l1, l2:		variables of the Love wave system
 	r:			radius vector in m
 	"""
-
-	#- Packages.
-	import numpy as np
-	import MODELS.models as m
-	import matplotlib.pyplot as plt
-
-	#- Radius of the Earth (or other planetary body) [m].
-	Re = 6371000.0
 
 	#- initialisation -----------------------------------------------------------------------------
 

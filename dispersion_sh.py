@@ -23,7 +23,6 @@ import MODELS.models as m
 #- Radius of the Earth (or other planetary body) [m].
 Re = 6371000.0
 
-
 def dispersion_sh(xml_input):
 	"""
 	Compute dispersion curves, displacement functions and kernels for SH propagation.

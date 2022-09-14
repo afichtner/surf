@@ -9,19 +9,32 @@ Original system, not actually used to solve the eigenvalue problem, but to compu
     (http://www.gnu.org/copyleft/gpl.html)
 """
 
+#- Packages.
+import numpy as np
+from numba import jit
+import MODELS.models as m
+import matplotlib.pyplot as plt
+
+#- Radius of the Earth (or other planetary body) [m].
+Re = 6371000.0
+
 #--------------------------------------------------------------------------------------------------
 #- right-hand sides of the first-order system for Rayleigh waves
 #--------------------------------------------------------------------------------------------------
 
+@jit(nopython=True)
 def f1(C,F,k,r2,r3):
 	return (r2 / C + k * F * r3 / C)
 
+@jit(nopython=True)
 def f2(rho,omega,k,r1,r4):
 	return (-rho * omega**2 * r1 + k * r4)
 
+@jit(nopython=True)
 def f3(L,k,r1,r4):
 	return (r4 / L - k * r1)
 
+@jit(nopython=True)
 def f4(rho,A,C,F,omega,k,r2,r3):
 	return (-k * F * r2 / C + (k**2 * (A - F**2 / C) - rho * omega**2) * r3)
 
@@ -43,14 +56,6 @@ def integrate_psv(r_min, dr, omega, k, r, rho, A, C, F, L, N, initial_condition)
 	r1, ...:	variables of the Rayleigh wave system
 	r:			radius vector in m
 	"""
-
-	#- Packages.
-	import numpy as np
-	import MODELS.models as m
-	import matplotlib.pyplot as plt
-
-	#- Radius of the Earth (or other planetary body) [m].
-	Re = 6371000.0
 
 	#- initialisation -----------------------------------------------------------------------------
 
