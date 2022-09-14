@@ -34,7 +34,7 @@ def f5(rho,L,omega,k,r1,r2,r3):
 #- numerical integration
 #--------------------------------------------------------------------------------------------------
 
-def integrate_psv_alt(r_min, dr, omega, k, model):
+def integrate_psv_alt(r_min, dr, omega, k, r, rho, A, C, F, L, N):
 	"""
 	Integrate first-order system for a fixed circular frequency omega and a fixed wavenumber k.
 	r1, r2, r3, r4, r5, r = integrate_psv_alt(r_min, dr, omega, k, model)
@@ -43,7 +43,7 @@ def integrate_psv_alt(r_min, dr, omega, k, model):
 	dr:			radius increment in m
 	omega:		circular frequency in Hz
 	k:			wave number in 1/m
-	model:		Earth model, e.g. "PREM", "GUTENBERG", ... .
+	r, rho, A, C, F, L, N: Earth model properties
 
 	r1, ...:	variables of the alternative Rayleigh wave system
 	r:			radius vector in m
@@ -58,20 +58,6 @@ def integrate_psv_alt(r_min, dr, omega, k, model):
 	Re = 6371000.0
 
 	#- initialisation -----------------------------------------------------------------------------
-
-	if model == "EXTERNAL":
-		r, rho, A, C, F, L, N = m.models(None, model)
-
-	else:
-		r = np.arange(r_min, Re + dr, dr, dtype=float)
-		rho = np.zeros(len(r))
-		A = np.zeros(len(r))
-		C = np.zeros(len(r))
-		F = np.zeros(len(r))
-		L = np.zeros(len(r))
-		N = np.zeros(len(r))
-		for n in np.arange(len(r)):
-			rho[n], A[n], C[n], F[n], L[n], N[n] = m.models(r[n], model)
 
 	r1 = np.zeros(len(r))
 	r2 = np.zeros(len(r))

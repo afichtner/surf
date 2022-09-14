@@ -93,7 +93,7 @@ def dispersion_psv(xml_input):
 		for n in np.arange(len(k)):
 
 			#- compute vertical wave functions using alternative system
-			r1, r2, r3, r4, r5, r = ipsv_alt.integrate_psv_alt(r_min, dr, _omega, k[n], model)
+			r1, r2, r3, r4, r5, r = ipsv_alt.integrate_psv_alt(r_min, dr, _omega, k[n], r, rho, A, C, F, L, N)
 			r_right = r2[len(r2)-1]
 
 			#- check if there is a zero -----------------------------------------------------------
@@ -110,7 +110,7 @@ def dispersion_psv(xml_input):
 
 				for i in np.arange(5):
 					k_new = (k_left * np.abs(rr_right) + k_right * np.abs(rr_left)) / (np.abs(rr_left) + np.abs(rr_right))
-					r1, r2, r3, r4, r5, r = ipsv_alt.integrate_psv_alt(r_min, dr, _omega, k_new, model)
+					r1, r2, r3, r4, r5, r = ipsv_alt.integrate_psv_alt(r_min, dr, _omega, k_new, r, rho, A, C, F, L, N)
 					rr = r2[len(r2)-1]
 					if rr * rr_left < 0.0:
 						k_right = k_new
@@ -127,8 +127,8 @@ def dispersion_psv(xml_input):
 
 				#- compute final vertical wave functions using the original first-order system
 				#- two independent solutions
-				r11, r21, r31, r41, r = ipsv.integrate_psv(r_min, dr, _omega, k_new, model, 1)
-				r12, r22, r32, r42, r = ipsv.integrate_psv(r_min, dr, _omega, k_new, model, 2)
+				r11, r21, r31, r41, r = ipsv.integrate_psv(r_min, dr, _omega, k_new, r, rho, A, C, F, L, N, 1)
+				r12, r22, r32, r42, r = ipsv.integrate_psv(r_min, dr, _omega, k_new, r, rho, A, C, F, L, N, 2)
 				#- determine their weights via boundary condition (weight q1 is set to 1)
 				nr = len(r) - 1
 				q2 = -r21[nr] / r22[nr]

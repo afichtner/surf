@@ -94,7 +94,7 @@ def dispersion_sh(xml_input):
 		for n in np.arange(len(k)):
 
 			#- compute vertical wave functions
-			l1, l2, r = ish.integrate_sh(r_min, dr, _omega, k[n], model)
+			l1, l2, r = ish.integrate_sh(r_min, dr, _omega, k[n], r, rho, A, C, F, L, N)
 			l_right = l2[len(l2)-1]
 
 			#- check if there is a zero -----------------------------------------------------------
@@ -111,7 +111,7 @@ def dispersion_sh(xml_input):
 
 				for i in np.arange(5):
 					k_new = (k_left * np.abs(ll_right) + k_right * np.abs(ll_left)) / (np.abs(ll_left) + np.abs(ll_right))
-					l1, l2, r = ish.integrate_sh(r_min, dr, _omega, k_new, model)
+					l1, l2, r = ish.integrate_sh(r_min, dr, _omega, k_new, r, rho, A, C, F, L, N)
 					ll = l2[len(l2)-1]
 					if ll * ll_left < 0.0:
 						k_right = k_new
@@ -128,7 +128,7 @@ def dispersion_sh(xml_input):
 
 				#- stress and displacement functions 
 
-				l1, l2, r = ish.integrate_sh(r_min, dr, _omega, k_new, model)
+				l1, l2, r = ish.integrate_sh(r_min, dr, _omega, k_new, r, rho, A, C, F, L, N)
 
 				#- phase velocity
 

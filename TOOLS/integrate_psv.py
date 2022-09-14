@@ -29,7 +29,7 @@ def f4(rho,A,C,F,omega,k,r2,r3):
 #- numerical integration
 #--------------------------------------------------------------------------------------------------
 
-def integrate_psv(r_min, dr, omega, k, model, initial_condition):
+def integrate_psv(r_min, dr, omega, k, r, rho, A, C, F, L, N, initial_condition):
 	"""
 	Integrate first-order system for a fixed circular frequency omega and a fixed wavenumber k.
 	r1, r2, r3, r4, r = integrate_psv(r_min, dr, omega, k, model)
@@ -53,20 +53,6 @@ def integrate_psv(r_min, dr, omega, k, model, initial_condition):
 	Re = 6371000.0
 
 	#- initialisation -----------------------------------------------------------------------------
-
-	if model == "EXTERNAL":
-		r, rho, A, C, F, L, N = m.models(None, model)
-
-	else:
-		r = np.arange(r_min, Re + dr, dr, dtype=float)
-		rho = np.zeros(len(r))
-		A = np.zeros(len(r))
-		C = np.zeros(len(r))
-		F = np.zeros(len(r))
-		L = np.zeros(len(r))
-		N = np.zeros(len(r))
-		for n in np.arange(len(r)):
-			rho[n], A[n], C[n], F[n], L[n], N[n] = m.models(r[n], model)
 
 	r1 = np.zeros(len(r))
 	r2 = np.zeros(len(r))
